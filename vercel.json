@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/processar.js": { "maxDuration": 60 }
+  },
+  "crons": [
+    { "path": "/api/processar", "schedule": "0 12 * * *" }
+  ]
+}
