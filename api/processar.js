@@ -6,7 +6,7 @@
 //   BITRIX_WEBHOOK_URL   webhook de entrada com o escopo crm
 //   EQUIPE_EMAILS        e-mails da equipe que recebe os casos não encontrados (separados por vírgula)
 //   CRON_SECRET          o agendador manda "Authorization: Bearer <CRON_SECRET>"
-//   opcionais: CATEGORIA (1), CAMPO_ANEXO (UF_CRM_1616530159), ETAPA_PREFERIDA (Documentação),
+//   opcionais: CATEGORIA (1), CAMPO_ANEXO (UF_CRM_1616530159),
 //              PASTA_SUCESSO (Sucedidos), PASTA_FALHA (Mal-sucedidos), LIMITE_POR_EXECUCAO (20)
 //
 // ?simular=1 mostra o que seria feito, sem anexar, mover nem avisar.

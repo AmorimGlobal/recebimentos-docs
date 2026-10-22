@@ -10,13 +10,13 @@ Clientes da Amorim mandam documentos para **recebimentos-docs@amorimlawfirm.com*
   - anexa os documentos no campo **"Anexo - Documentação cliente"** (`UF_CRM_1616530159`);
   - comenta no card;
   - move o e-mail para **INBOX.Sucedidos**.
-- **Não achou:** pode ser nenhum card, mais de um card, ou e-mail sem anexo. O worker avisa a equipe por e-mail, com o original anexado, e move para **INBOX.Mal-sucedidos**.
+- **Não achou:** pode ser nenhum card com o e-mail ou e-mail sem anexo. O worker avisa a equipe por e-mail, com o original anexado, e move para **INBOX.Mal-sucedidos**.
 - **Mensagem automática** (cPanel, mailer-daemon, no-reply, a própria caixa): só move para Mal-sucedidos, sem aviso.
 
 ## Regras que importam
 
 - **Card:** a busca usa `crm.duplicate.findbycomm` (CONTACT, EMAIL), que ignora maiúsculas. Depois pega os negócios abertos da categoria 1 com esse contato principal. Contato secundário de um card não entra.
-- **Mais de um card aberto com o mesmo e-mail:** no portal, em 22/10/2026, eram 101 de 1.191 e-mails. O desempate é a etapa **Documentação** (`C1:NEW`). Se ainda sobrar mais de um, o caso vai para a equipe.
+- **Mais de um card aberto com o mesmo e-mail:** no portal, em 22/10/2026, eram 101 de 1.191 e-mails. Vai no card com a **movimentação mais recente** (`MOVED_TIME`, a última mudança de etapa; sem ela, `DATE_MODIFY`; empate, o maior ID), por decisão do usuário em 22/10/2026. O comentário no card lista os outros cards com o mesmo e-mail.
 - **Anexos que contam:**
   - Ficam de fora:
     - imagem embutida no corpo (com Content-ID) abaixo de 100 KB, que é logo de assinatura;
@@ -62,7 +62,6 @@ node tools/processar.js --gravar
 - **Opcionais, com o padrão entre parênteses:**
   - `CATEGORIA` (1)
   - `CAMPO_ANEXO` (UF_CRM_1616530159)
-  - `ETAPA_PREFERIDA` (Documentação)
   - `PASTA_SUCESSO` (Sucedidos)
   - `PASTA_FALHA` (Mal-sucedidos)
   - `LIMITE_POR_EXECUCAO` (20)

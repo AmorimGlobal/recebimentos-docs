@@ -24,14 +24,20 @@ test("nome do arquivo: o original sem caracteres proibidos, ou um nome com a dat
   assert.equal(r.nomeDoArquivo({ contentType: "image/jpeg" }, 1, "2026-10-22T10:00:00Z"), "documento-2026-10-22-2.jpeg");
 });
 
-test("decisão: um card só, ou o único na etapa de Documentação; senão, para a equipe", () => {
+test("decisão: um card só, ou o de movimentação mais recente; sem card ou sem anexo, para a equipe", () => {
   const anexos = [{ nome: "a.pdf" }];
   assert.equal(r.decidir({ remetente: "Cliente@Gmail.com", anexos, candidatos: [deal("10", "C1:NEW")] }).negocio.ID, "10");
-  const dois = [deal("10", "C1:EXECUTING"), deal("11", "C1:NEW")];
-  const d = r.decidir({ remetente: "c@x.com", anexos, candidatos: dois, etapaPreferida: "C1:NEW" });
+  const tres = [
+    Object.assign(deal("10", "C1:EXECUTING"), { MOVED_TIME: "2026-09-01T10:00:00+03:00" }),
+    Object.assign(deal("11", "C1:NEW"), { MOVED_TIME: "2026-10-20T10:00:00+03:00" }),
+    Object.assign(deal("12", "C1:NEW"), { MOVED_TIME: "", DATE_MODIFY: "2026-10-01T10:00:00+03:00" }),
+  ];
+  const d = r.decidir({ remetente: "c@x.com", anexos, candidatos: tres });
   assert.equal(d.tipo, "sucesso");
   assert.equal(d.negocio.ID, "11");
-  assert.deepEqual(r.decidir({ remetente: "c@x.com", anexos, candidatos: dois, etapaPreferida: "C1:PREPARATION" }).motivo, "ambiguo");
+  assert.deepEqual(d.outros.map((x) => x.ID), ["12", "10"]);
+  const empate = [Object.assign(deal("20"), { MOVED_TIME: "2026-10-20T10:00:00+03:00" }), Object.assign(deal("21"), { MOVED_TIME: "2026-10-20T10:00:00+03:00" })];
+  assert.equal(r.decidir({ remetente: "c@x.com", anexos, candidatos: empate }).negocio.ID, "21");
   assert.deepEqual(r.decidir({ remetente: "c@x.com", anexos, candidatos: [] }).motivo, "nao-encontrado");
   assert.deepEqual(r.decidir({ remetente: "c@x.com", anexos: [], candidatos: [deal("10")] }).motivo, "sem-anexo");
 });

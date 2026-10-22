@@ -52,10 +52,10 @@ const avisoFalso = () => { const enviados = []; return { enviados, async enviar(
 
 const CARDS = {
   "ana@gmail.com": [{ ID: "775", TITLE: "Ana Ribeiro · Cidadania", STAGE_ID: "C1:NEW" }],
-  "bruno@gmail.com": [{ ID: "801", TITLE: "Bruno · Visto", STAGE_ID: "C1:EXECUTING" }, { ID: "802", TITLE: "Bruno · Cidadania", STAGE_ID: "C1:PREPARATION" }],
+  "bruno@gmail.com": [{ ID: "801", TITLE: "Bruno · Visto", STAGE_ID: "C1:EXECUTING", MOVED_TIME: "2026-10-01T10:00:00+03:00" }, { ID: "802", TITLE: "Bruno · Cidadania", STAGE_ID: "C1:PREPARATION", MOVED_TIME: "2026-10-15T10:00:00+03:00" }],
 };
 
-test("passada completa: anexa, comenta e move; avisa a equipe com o original; ignora o automático", async () => {
+test("passada completa: anexa, comenta e move; mais de um card vai no mais recente; avisa a equipe com o original; ignora o automático", async () => {
   const caixa = caixaFalsa();
   await caixa.adicionar({ de: "Ana Ribeiro <Ana@Gmail.com>", assunto: "Documentos", anexos: [{ nome: "passaporte.pdf" }, { nome: "logo.png", tipo: "image/png", tamanho: 9000, cid: "logo@x" }, { nome: "rg.jpg", tipo: "image/jpeg", tamanho: 900000 }] });
   await caixa.adicionar({ de: "desconhecido@hotmail.com", assunto: "meus docs", anexos: [{ nome: "certidao.pdf" }] });
@@ -63,27 +63,18 @@ test("passada completa: anexa, comenta e move; avisa a equipe com o original; ig
   await caixa.adicionar({ de: "cpanel@amorimlawfirm.com", assunto: "Configuração", anexos: [{ nome: "a.mobileconfig", tamanho: 7000 }] });
   const bitrix = bitrixFalso(CARDS), aviso = avisoFalso();
   const r = await processar({ caixa, bitrix, aviso, cfg });
-  assert.deepEqual([r.lidos, r.sucesso, r.falha, r.ignorados, r.erros.length], [4, 1, 2, 1, 0]);
+  assert.deepEqual([r.lidos, r.sucesso, r.falha, r.ignorados, r.erros.length], [4, 2, 1, 1, 0]);
   assert.deepEqual(bitrix.arquivos["775"], ["passaporte.pdf", "rg.jpg"]); // o logo da assinatura ficou de fora
   assert.match(bitrix.comentarios[0].texto, /Arquivos: passaporte\.pdf, rg\.jpg/);
   assert.equal(caixa.msgs[1].pasta, "INBOX.Sucedidos");
   assert.equal(caixa.msgs[2].pasta, "INBOX.Mal-sucedidos");
-  assert.equal(caixa.msgs[3].pasta, "INBOX.Mal-sucedidos");
+  assert.equal(caixa.msgs[3].pasta, "INBOX.Sucedidos");
+  assert.deepEqual(bitrix.arquivos["802"], ["x.pdf"]); // o card do Bruno movimentado por último
+  assert.match(bitrix.comentarios.find((c) => c.id === "802").texto, /outros cards abertos[\s\S]*deal\/details\/801\//);
   assert.equal(caixa.msgs[4].pasta, "INBOX.Mal-sucedidos");
-  assert.equal(aviso.enviados.length, 2, "o automático do cPanel não gera aviso");
+  assert.equal(aviso.enviados.length, 1, "o automático do cPanel não gera aviso");
   assert.match(aviso.enviados[0].assunto, /Card não encontrado: desconhecido@hotmail\.com/);
   assert.ok(Buffer.isBuffer(aviso.enviados[0].original), "o e-mail original vai anexado");
-  assert.match(aviso.enviados[1].assunto, /Mais de um card/);
-  assert.match(aviso.enviados[1].texto, /crm\/deal\/details\/801\/[\s\S]*crm\/deal\/details\/802\//);
-});
-
-test("desempate pela etapa de Documentação", async () => {
-  const caixa = caixaFalsa();
-  await caixa.adicionar({ de: "bruno@gmail.com", assunto: "docs", anexos: [{ nome: "x.pdf" }] });
-  const cards = { "bruno@gmail.com": [{ ID: "801", STAGE_ID: "C1:EXECUTING" }, { ID: "802", STAGE_ID: "C1:NEW" }] };
-  const bitrix = bitrixFalso(cards);
-  await processar({ caixa, bitrix, aviso: avisoFalso(), cfg });
-  assert.deepEqual(bitrix.arquivos["802"], ["x.pdf"]);
 });
 
 test("passada que cai no meio: o e-mail fica no INBOX e a próxima não anexa de novo o que já foi", async () => {
