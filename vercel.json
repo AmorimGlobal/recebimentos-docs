@@ -1,8 +1,14 @@
 {
+  "outputDirectory": "public",
   "functions": {
-    "api/processar.js": { "maxDuration": 60 }
+    "api/processar.js": {
+      "maxDuration": 60
+    }
   },
   "crons": [
-    { "path": "/api/processar", "schedule": "0 12 * * *" }
+    {
+      "path": "/api/processar",
+      "schedule": "0 12 * * *"
+    }
   ]
 }
