@@ -1,8 +1,8 @@
-// Uma passada pela caixa recebimentos-docs. Chamada a cada poucos minutos por um agendador
+// Uma passada pela caixa documentos@amorimlawfirm.com. Chamada a cada poucos minutos por um agendador
 // externo (o cron da Vercel Hobby só roda uma vez por dia e fica como reserva, em vercel.json).
 //
 // Variáveis de ambiente na Vercel:
-//   EMAIL_SENHA          senha da caixa recebimentos-docs@amorimlawfirm.com (IMAP e SMTP)
+//   EMAIL_SENHA          senha da caixa documentos@amorimlawfirm.com (IMAP e SMTP)
 //   BITRIX_WEBHOOK_URL   webhook de entrada com o escopo crm
 //   EQUIPE_EMAILS        e-mails da equipe que recebe os casos não encontrados (separados por vírgula)
 //   CRON_SECRET          o agendador manda "Authorization: Bearer <CRON_SECRET>"

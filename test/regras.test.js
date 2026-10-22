@@ -43,7 +43,7 @@ test("decisão: um card só, ou o de movimentação mais recente; sem card ou se
 });
 
 test("mensagens automáticas e da própria caixa são ignoradas, sem aviso", () => {
-  for (const de of ["cpanel@amorimlawfirm.com", "MAILER-DAEMON@x.com", "no-reply@banco.com", "recebimentos-docs@amorimlawfirm.com", ""]) {
-    assert.equal(r.decidir({ remetente: de, anexos: [{ nome: "a" }], candidatos: [], proprioEmail: "recebimentos-docs@amorimlawfirm.com" }).tipo, "ignorar", de);
+  for (const de of ["cpanel@amorimlawfirm.com", "MAILER-DAEMON@x.com", "no-reply@banco.com", "documentos@amorimlawfirm.com", ""]) {
+    assert.equal(r.decidir({ remetente: de, anexos: [{ nome: "a" }], candidatos: [], proprioEmail: "documentos@amorimlawfirm.com" }).tipo, "ignorar", de);
   }
 });

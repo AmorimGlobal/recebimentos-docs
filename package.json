@@ -1,7 +1,7 @@
 {
   "name": "recebimentos-docs",
   "version": "1.0.0",
-  "description": "Lê a caixa recebimentos-docs@amorimlawfirm.com e anexa os documentos no card do cliente no funil Development do Bitrix24",
+  "description": "Lê a caixa documentos@amorimlawfirm.com e anexa os documentos no card do cliente no funil Development do Bitrix24",
   "scripts": {
     "test": "node --test test/*.test.js",
     "simular": "node tools/processar.js",

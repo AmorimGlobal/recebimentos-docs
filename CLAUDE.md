@@ -1,16 +1,16 @@
 # CLAUDE.md
 
-Guia para o Claude Code (e para quem mantiver) o worker **recebimentos-docs** da Amorim.
+Guia para o Claude Code (e para quem mantiver) o worker **recebimentos-docs** da Amorim (o repositório manteve o nome; a caixa é **documentos@amorimlawfirm.com** desde 22/10/2026, porque "recebimentos" lembra pagamento).
 
 ## O que faz
 
-Clientes da Amorim mandam documentos para **recebimentos-docs@amorimlawfirm.com**. A cada passada, o worker lê o INBOX e trata cada e-mail, do mais antigo para o mais novo:
+Clientes da Amorim mandam documentos para **documentos@amorimlawfirm.com**. A cada passada, o worker lê o INBOX e trata cada e-mail, do mais antigo para o mais novo:
 
 - **Achou o card:** o remetente bate com o e-mail do contato de um card aberto do funil **2.Development** (categoria 1). O worker então:
   - anexa os documentos no campo **"Anexo - Documentação cliente"** (`UF_CRM_1616530159`);
   - comenta no card;
   - move o e-mail para **INBOX.Sucedidos**.
-- **Não achou:** pode ser nenhum card com o e-mail ou e-mail sem anexo. O worker avisa a equipe por e-mail, com o original anexado, e move para **INBOX.Mal-sucedidos**.
+- **Não achou:** pode ser nenhum card com o e-mail ou e-mail sem anexo. O worker avisa a equipe por e-mail, com o original anexado, e move para **INBOX.mal-sucedidos**.
 - **Mensagem automática** (cPanel, mailer-daemon, no-reply, a própria caixa): só move para Mal-sucedidos, sem aviso.
 
 ## Regras que importam
@@ -28,6 +28,7 @@ Clientes da Amorim mandam documentos para **recebimentos-docs@amorimlawfirm.com*
   - O `crm.deal.update` com os mesmos `{id}` **apaga** o que já estava. Isso foi medido em card de teste.
   - Depois de cada arquivo, `anexar()` confere que nada sumiu.
 - **Passada que cai no meio não repete nada:** cada documento anexado, o comentário e o aviso marcam o e-mail com uma palavra-chave IMAP (`Anexado-N`, `Comentado`, `Avisado`). Um e-mail que deu erro fica no INBOX para a próxima passada.
+- **Pastas:** o worker usa a pasta que já existe com o nome dela (no servidor, "sucedidos" e "Sucedidos" são pastas diferentes) e só cria se não houver. Se o servidor não mover, vira erro e o e-mail fica no INBOX.
 - **Servidor de e-mail:** cPanel da HostGator (`mail.amorimlawfirm.com`, IMAP 993 e SMTP 465), com a mesma conta. O separador de pasta é `.`. O servidor não tem MOVE, e a `imapflow` copia e apaga.
 
 ## Estrutura
@@ -67,6 +68,13 @@ node tools/processar.js --gravar
   - `LIMITE_POR_EXECUCAO` (20)
 
 O `.env` está no `.gitignore` e nunca vai para o repositório.
+
+## Onde roda
+
+- **Bitrix:** não há app instalado. O worker usa um **webhook de entrada** (`BITRIX_WEBHOOK_URL`, escopo crm), e o que ele grava aparece no Bitrix como feito pelo dono do webhook.
+- **Servidor:** a função `api/processar.js` na Vercel.
+  - O cron da Vercel gratuita só roda 1 vez por dia e fica como reserva.
+  - O ritmo de 5 minutos vem de um agendador externo (cron-job.org), que chama a função com `Authorization: Bearer <CRON_SECRET>`.
 
 ## Estado (22/10/2026)
 

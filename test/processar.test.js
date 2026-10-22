@@ -9,7 +9,7 @@ const cfg = lerConfig({ EMAIL_SENHA: "x", BITRIX_WEBHOOK_URL: "https://amorimglo
 
 function emailMime({ de, assunto, anexos }) {
   return new MailComposer({
-    from: de, to: "recebimentos-docs@amorimlawfirm.com", subject: assunto, text: "Seguem os documentos.",
+    from: de, to: "documentos@amorimlawfirm.com", subject: assunto, text: "Seguem os documentos.",
     date: new Date("2026-10-22T13:00:00Z"),
     attachments: (anexos || []).map((a) => ({ filename: a.nome, content: Buffer.alloc(a.tamanho || 50000, 7), contentType: a.tipo || "application/pdf", cid: a.cid })),
   }).compile().build();
