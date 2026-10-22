@@ -55,7 +55,7 @@ const CARDS = {
   "bruno@gmail.com": [{ ID: "801", TITLE: "Bruno · Visto", STAGE_ID: "C1:EXECUTING", MOVED_TIME: "2026-10-01T10:00:00+03:00" }, { ID: "802", TITLE: "Bruno · Cidadania", STAGE_ID: "C1:PREPARATION", MOVED_TIME: "2026-10-15T10:00:00+03:00" }],
 };
 
-test("passada completa: anexa, comenta e move; mais de um card vai no mais recente; avisa a equipe com o original; ignora o automático", async () => {
+test("passada completa: anexa, comenta e move; mais de um card vai no mais recente; avisa a equipe com os documentos; ignora o automático", async () => {
   const caixa = caixaFalsa();
   await caixa.adicionar({ de: "Ana Ribeiro <Ana@Gmail.com>", assunto: "Documentos", anexos: [{ nome: "passaporte.pdf" }, { nome: "logo.png", tipo: "image/png", tamanho: 9000, cid: "logo@x" }, { nome: "rg.jpg", tipo: "image/jpeg", tamanho: 900000 }] });
   await caixa.adicionar({ de: "desconhecido@hotmail.com", assunto: "meus docs", anexos: [{ nome: "certidao.pdf" }] });
@@ -74,7 +74,8 @@ test("passada completa: anexa, comenta e move; mais de um card vai no mais recen
   assert.equal(caixa.msgs[4].pasta, "INBOX.Mal-sucedidos");
   assert.equal(aviso.enviados.length, 1, "o automático do cPanel não gera aviso");
   assert.match(aviso.enviados[0].assunto, /Card não encontrado: desconhecido@hotmail\.com/);
-  assert.ok(Buffer.isBuffer(aviso.enviados[0].original), "o e-mail original vai anexado");
+  assert.deepEqual(aviso.enviados[0].anexos.map((a) => a.nome), ["certidao.pdf"], "os documentos vão anexados ao aviso");
+  assert.ok(Buffer.isBuffer(aviso.enviados[0].anexos[0].conteudo));
 });
 
 test("passada que cai no meio: o e-mail fica no INBOX e a próxima não anexa de novo o que já foi", async () => {

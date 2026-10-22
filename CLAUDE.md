@@ -10,7 +10,7 @@ Clientes da Amorim mandam documentos para **documentos@amorimlawfirm.com**. A ca
   - anexa os documentos no campo **"Anexo - Documentação cliente"** (`UF_CRM_1616530159`);
   - comenta no card;
   - move o e-mail para **INBOX.Sucedidos**.
-- **Não achou:** pode ser nenhum card com o e-mail ou e-mail sem anexo. O worker avisa a equipe por e-mail, com o original anexado, e move para **INBOX.mal-sucedidos**.
+- **Não achou:** pode ser nenhum card com o e-mail ou e-mail sem anexo. O worker avisa a equipe por e-mail, com os documentos anexados, e move para **INBOX.mal-sucedidos**. O SMTP da HostGator recusa anexo `.eml` ("disallowed extension"); se recusar algum anexo, o aviso sai sem eles.
 - **Mensagem automática** (cPanel, mailer-daemon, no-reply, a própria caixa): só move para Mal-sucedidos, sem aviso.
 
 ## Regras que importam
