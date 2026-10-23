@@ -87,7 +87,8 @@ O `.env` está no `.gitignore` e nunca vai para o repositório.
   - card não encontrado: gerou aviso com o documento anexado;
   - mensagem automática: só arquivou.
 - **Avisos:** chegam em fernando.piccinini@amorimglobal.com (`EQUIPE_EMAILS`, de teste) até a equipe definir quem recebe.
-- **Pendente:**
-  - os e-mails da equipe;
-  - um webhook num usuário técnico (hoje é o do Fernando);
-  - trocar a senha da caixa e o `CRON_SECRET`, que passaram pelo chat.
+- **Pendente:** os e-mails da equipe em `EQUIPE_EMAILS`. O usuário vai mandar.
+- **Decidido em 23/10/2026:**
+  - o webhook continua o do Fernando, e as ações aparecem como dele no Bitrix;
+  - não trocar a senha da caixa nem o `CRON_SECRET`, mesmo tendo passado pelo chat;
+  - a divulgação do endereço para clientes e equipe fica com a Amorim.
