@@ -37,7 +37,8 @@ module.exports = async function handler(req, res, injetado) {
     const bitrix = inj.bitrix || criarBitrix(Object.assign({ chamar: criarChamada(cfg.bitrix.url) }, cfg.bitrix));
     const resumo = await processar({
       caixa: inj.caixa || criarCaixa(cfg.imap), bitrix, aviso: inj.aviso || criarAviso(cfg.smtp), cfg, simular,
-      tempoMaxMs: 45 * 1000, log: (t) => console.log(t),
+      // o cron-job.org gratuito espera até 30 s; o que não couber fica para a passada seguinte
+      tempoMaxMs: Number(env.TEMPO_MAX_SEGUNDOS || 25) * 1000, log: (t) => console.log(t),
     });
     // a resposta não leva o conteúdo dos e-mails: só contagens e decisões
     return responder(res, 200, Object.assign({ ok: true }, resumo, { detalhes: resumo.detalhes.map((d) => ({ uid: d.uid, decisao: d.decisao, motivo: d.motivo, negocio: d.negocio, anexos: d.anexos.length })) }));
