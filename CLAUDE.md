@@ -72,19 +72,22 @@ O `.env` está no `.gitignore` e nunca vai para o repositório.
 ## Onde roda
 
 - **Bitrix:** não há app instalado. O worker usa um **webhook de entrada** (`BITRIX_WEBHOOK_URL`, escopo crm), e o que ele grava aparece no Bitrix como feito pelo dono do webhook.
-- **Servidor:** a função `api/processar.js` na Vercel.
-  - O cron da Vercel gratuita só roda 1 vez por dia e fica como reserva.
-  - O ritmo de 5 minutos vem de um agendador externo (cron-job.org), que chama a função com `Authorization: Bearer <CRON_SECRET>`.
+- **Servidor:** a função `api/processar.js` na Vercel, em https://recebimentos-docs.vercel.app (projeto do time `amorims-projects-ee19b0fd`).
+- **Quem chama a função:**
+  1. O **cron do cPanel da HostGator** (Trabalhos Cron), a cada 5 minutos, com `curl -s -m 60 -H "Authorization: Bearer <CRON_SECRET>" https://recebimentos-docs.vercel.app/api/processar`. Testado em 23/10/2026: um e-mail foi processado sozinho em 1,4 minuto.
+  2. **Reserva:** o cron da própria Vercel, 1 vez por dia às 12h UTC (9h em Brasília), configurado no `vercel.json`.
+- **Tempo da passada:** no máximo 25 segundos (`TEMPO_MAX_SEGUNDOS`). O que não couber fica para a passada seguinte.
+- **Agendador parado:** nenhum e-mail se perde. Eles esperam no INBOX.
 
-## Estado (22/10/2026)
+## Estado (23/10/2026)
 
-- **Testado contra o real:**
-  - login IMAP e SMTP;
-  - busca do card (8 de 8);
-  - anexo sem apagar, com comentário, em cards de teste do funil "Testes - Inovações" apagados depois;
-  - simulação na caixa.
-- **Ainda não está publicado.** Falta:
-  - o repositório no GitHub;
-  - o projeto na Vercel, com as variáveis;
-  - o agendador externo;
-  - os e-mails da equipe (`EQUIPE_EMAILS`).
+- **No ar e testado com e-mails reais:**
+  - achou o card: anexou, comentou e moveu, sem duplicar ao rodar de novo;
+  - sem anexo: gerou aviso;
+  - card não encontrado: gerou aviso com o documento anexado;
+  - mensagem automática: só arquivou.
+- **Avisos:** chegam em fernando.piccinini@amorimglobal.com (`EQUIPE_EMAILS`, de teste) até a equipe definir quem recebe.
+- **Pendente:**
+  - os e-mails da equipe;
+  - um webhook num usuário técnico (hoje é o do Fernando);
+  - trocar a senha da caixa e o `CRON_SECRET`, que passaram pelo chat.
